@@ -188,6 +188,10 @@ if (SERVER) then
 		local info2 = ix.class.list[oldClass]
 
 		if (info.OnSet) then
+			if type(class.model) == "string" then
+				client:SetModel(class.model)
+			elseif type(class.model) == "table" then
+				client:SetModel(class.model[0])
 			info:OnSet(client)
 		end
 
