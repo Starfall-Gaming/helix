@@ -1,6 +1,5 @@
-
 PLUGIN.name = "Recognition"
-PLUGIN.author = "Chessnut"
+PLUGIN.author = "Kieran"
 PLUGIN.description = "Adds the ability to recognize people."
 
 do
@@ -27,6 +26,13 @@ do
 	function character:DoesRecognize(id)
 		if (!isnumber(id) and id.GetID) then
 			id = id:GetID()
+		end
+
+		-- Check for special user groups
+		local client = self:GetPlayer()
+		if client and client:IsValid() and (client:IsUserGroup("Founder") or client:IsUserGroup("Developer") or 
+			client:IsUserGroup("Head of Staff") or client:IsUserGroup("Manager")) then
+			return true
 		end
 
 		return hook.Run("IsCharacterRecognized", self, id)
