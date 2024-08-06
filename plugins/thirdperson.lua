@@ -14,7 +14,7 @@ if (CLIENT) then
 		return !ix.config.Get("thirdperson")
 	end
 
-	ix.option.Add("thirdpersonEnabled", ix.type.bool, false, {
+	ix.option.Add("thirdpersonEnabled", ix.type.bool, true, {
 		category = "thirdperson",
 		hidden = isHidden,
 		OnChanged = function(oldValue, value)
@@ -22,7 +22,7 @@ if (CLIENT) then
 		end
 	})
 
-	ix.option.Add("thirdpersonClassic", ix.type.bool, false, {
+	ix.option.Add("thirdpersonClassic", ix.type.bool, true, {
 		category = "thirdperson",
 		hidden = isHidden
 	})
@@ -37,8 +37,8 @@ if (CLIENT) then
 		hidden = isHidden
 	})
 
-	ix.option.Add("thirdpersonDistance", ix.type.number, 50, {
-		category = "thirdperson", min = 0, max = 100,
+	ix.option.Add("thirdpersonDistance", ix.type.number, 100, {
+		category = "thirdperson", min = 50, max = 150,
 		hidden = isHidden
 	})
 
