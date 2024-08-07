@@ -1,4 +1,3 @@
-
 util.AddNetworkString("ixPlayerDeath")
 
 function GM:PlayerInitialSpawn(client)
@@ -11,7 +10,7 @@ function GM:PlayerInitialSpawn(client)
 
 		local character = ix.char.New({
 			name = client:Name(),
-			faction = faction and faction.uniqueID or "unknown",
+			faction = faction and faction.uniqueID or "",
 			model = faction and table.Random(faction:GetModels(client)) or "models/gman.mdl"
 		}, botID, client, client:SteamID64())
 		character.isBot = true

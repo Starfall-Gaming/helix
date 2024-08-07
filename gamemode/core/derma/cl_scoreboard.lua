@@ -104,25 +104,107 @@ function PANEL:Init()
     self.icon:Dock(LEFT)
     self.icon:DockMargin(0, 0, 8, 0)
 
-    self.name = self:Add("DLabel")
-    self.name:SetFont("ixMediumFont")
-    self.name:SetTextColor(color_white)
-    self.name:Dock(FILL)
-    self.name:DockMargin(0, 0, 0, 0)
-    
-    self.rank = self:Add("DLabel")
-    self.rank:SetFont("ixSmallFont")
-    self.rank:SetTextColor(color_white)
-    self.rank:Dock(RIGHT)
-    self.rank:DockMargin(8, 0, 0, 0)
+	self.name = self:Add("DLabel")
+	self.name:DockMargin(4, 4, 0, 0)
+	self.name:Dock(TOP)
+	self.name:SetTextColor(color_white)
+	self.name:SetFont("ixGenericFont")
+
+	self.description = self:Add("DLabel")
+	self.description:DockMargin(5, 0, 0, 0)
+	self.description:Dock(TOP)
+	self.description:SetTextColor(color_white)
+	self.description:SetFont("ixSmallFont")
+
+	self.paintFunction = rowPaintFunctions[1]
+	self.nextThink = CurTime() + 1
 end
 
-function PANEL:Setup(client)
-    self.name:SetText(client:Name())
-    self.icon:SetModel(client:GetModel(), client:GetSkin(), client:GetCharacter():GetData("groups", "000000000"))
+function PANEL:Update()
+	local client = self.player
+	local model = client:GetModel()
+	local skin = client:GetSkin()
+    local rank = ""
+    if playerRanks[client:SteamID64()] then rank = playerRanks[client:SteamID64()].rank .. " " end
+	local name = rank .. client:GetName()
+	local description = hook.Run("GetCharacterDescription", client) or
+		(client:GetCharacter() and client:GetCharacter():GetDescription()) or ""
 
-    local rankData = client:GetCharacter():GetData("rank", "Unknown") .. " (" .. client:GetCharacter():GetData("rankNumber", "N/A") .. ")"
-    self.rank:SetText(rankData)
+	local localCharacter = LocalPlayer():GetCharacter()
+	local character = IsValid(self.player) and self.player:GetCharacter()
+
+
+	-- no easy way to check bodygroups so we'll just set them anyway
+	for _, v in pairs(client:GetBodyGroups()) do
+		self.icon:SetBodygroup(v.id, client:GetBodygroup(v.id))
+	end
+
+	if (self.icon:GetModel() != model or self.icon:GetSkin() != skin) then
+		self.icon:SetModel(model, skin)
+		self.icon:SetTooltip(nil)
+	end
+
+	if (self.name:GetText() != name) then
+		self.name:SetText(name)
+		self.name:SizeToContents()
+	end
+
+	if (self.description:GetText() != description) then
+		self.description:SetText(description)
+		self.description:SizeToContents()
+	end
+end
+
+function PANEL:Think()
+	if (CurTime() >= self.nextThink) then
+		local client = self.player
+
+		if (!IsValid(client) or !client:GetCharacter() or self.character != client:GetCharacter() or self.team != client:Team()) then
+			self:Remove()
+			self:GetParent():SizeToContents()
+		end
+
+		self.nextThink = CurTime() + 1
+	end
+end
+
+function PANEL:SetPlayer(client)
+	self.player = client
+	self.team = client:Team()
+	self.character = client:GetCharacter()
+
+	self:Update()
+end
+
+function PANEL:Paint(width, height)
+	self.paintFunction(width, height)
+end
+
+vgui.Register("ixScoreboardRow", PANEL, "EditablePanel")
+
+-- faction grouping
+PANEL = {}
+
+AccessorFunc(PANEL, "faction", "Faction")
+
+function PANEL:Init()
+	self:DockMargin(0, 0, 0, 16)
+	self:SetTall(32)
+
+	self.nextThink = 0
+end
+
+function PANEL:AddPlayer(client, index)
+	if (!IsValid(client) or !client:GetCharacter() or hook.Run("ShouldShowPlayerOnScoreboard", client) == false) then
+		return false
+	end
+
+	local id = index % 2 == 0 and 1 or 2
+	local panel = self:Add("ixScoreboardRow")
+	panel:SetPlayer(client)
+	panel:Dock(TOP)
+	panel:SetZPos(2)
+	panel:SetBackgroundPaintFunction(rowPaintFunctions[id])
 
     self:SizeToContents()
 end
@@ -147,3 +229,11 @@ function CreateScoreboard()
         row:Setup(client)
     end
 end
+
+vgui.Register("ixScoreboard", PANEL, "DScrollPanel")
+
+hook.Add("CreateMenuButtons", "ixScoreboard", function(tabs)
+	tabs["scoreboard"] = function(container)
+		container:Add("ixScoreboard")
+	end
+end)

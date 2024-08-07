@@ -59,6 +59,7 @@ function ix.faction.LoadFromDir(directory)
 
 			FACTION.models = FACTION.models or CITIZEN_MODELS
 			FACTION.uniqueID = FACTION.uniqueID or niceName
+			FACTION.sortOrder = FACTION.sortOrder or FACTION.index
 
 			for _, v2 in pairs(FACTION.models) do
 				if (isstring(v2)) then
