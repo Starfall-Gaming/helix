@@ -513,6 +513,7 @@ function PANEL:Close(bFromMenu)
 end
 
 function PANEL:Paint(width, height)
+	self.currentAlpha = self.currentAlpha or 0
 	surface.SetTexture(gradient)
 	surface.SetDrawColor(0, 0, 0, 255)
 	surface.DrawTexturedRect(0, 0, width, height)

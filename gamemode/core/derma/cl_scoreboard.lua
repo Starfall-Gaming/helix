@@ -175,21 +175,15 @@ function PANEL:Update()
 	local client = self.player
 	local model = client:GetModel()
 	local skin = client:GetSkin()
-	local name = client:GetName()
+    local rank = ""
+    if playerRanks[client:SteamID64()] then rank = playerRanks[client:SteamID64()].rank .. " " end
+	local name = rank .. client:GetName()
 	local description = hook.Run("GetCharacterDescription", client) or
 		(client:GetCharacter() and client:GetCharacter():GetDescription()) or ""
 
-	local bRecognize = false
 	local localCharacter = LocalPlayer():GetCharacter()
 	local character = IsValid(self.player) and self.player:GetCharacter()
 
-	if (localCharacter and character) then
-		bRecognize = hook.Run("IsCharacterRecognized", localCharacter, character:GetID())
-			or hook.Run("IsPlayerRecognized", self.player)
-	end
-
-	self.icon:SetHidden(!bRecognize)
-	self:SetZPos(bRecognize and 1 or 2)
 
 	-- no easy way to check bodygroups so we'll just set them anyway
 	for _, v in pairs(client:GetBodyGroups()) do

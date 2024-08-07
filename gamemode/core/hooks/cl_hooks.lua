@@ -521,8 +521,8 @@ do
 		end
 
 		local panel = ix.gui.entityInfo
-		local bShouldShow = time >= aimTime and (!IsValid(ix.gui.menu) or ix.gui.menu.bClosing) and
-			(!IsValid(ix.gui.characterMenu) or ix.gui.characterMenu.bClosing)
+		local bShouldShow = false --time >= aimTime and (!IsValid(ix.gui.menu) or ix.gui.menu.bClosing) and
+			-- (!IsValid(ix.gui.characterMenu) or ix.gui.characterMenu.bClosing)
 		local bShouldPopulate = lastEntity.OnShouldPopulateEntityInfo and lastEntity:OnShouldPopulateEntityInfo() or true
 
 		if (bShouldShow and IsValid(lastEntity) and hookRun("ShouldPopulateEntityInfo", lastEntity) != false and
